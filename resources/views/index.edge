@@ -1,0 +1,66 @@
+<!-- views/index.edge -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .timer-circle {
+      stroke-dasharray: 565.48;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1s linear;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-r from-blue-100 to-indigo-100 min-h-screen">
+  <div class="max-w-md mx-auto pt-20">
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+      <!-- Timer SVG -->
+      <svg class="mx-auto" width="200" height="200">
+        <circle cx="100" cy="100" r="90" fill="none" stroke="#e6e6e6" stroke-width="8"/>
+        <circle class="timer-circle" cx="100" cy="100" r="90" fill="none" stroke="#4f46e5" 
+                stroke-width="8" pathLength="1"/>
+      </svg>
+      
+      <!-- Timer Display -->
+      <div class="text-center mt-6">
+        <div id="timer" class="text-4xl font-bold text-gray-800">25:00</div>
+        <button id="startBtn" class="mt-4 bg-indigo-600 text-white px-8 py-3 rounded-lg 
+                  hover:bg-indigo-700 transition-colors">
+          Démarrer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Timer logic avec alternance travail/pause
+    let isWorking = true
+    let timeLeft = 25 * 60
+    let timerId = null
+
+    function updateDisplay() {
+      const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0')
+      const seconds = (timeLeft % 60).toString().padStart(2, '0')
+      document.getElementById('timer').textContent = `${minutes}:${seconds}`
+      
+      const progress = 1 - (timeLeft / (isWorking ? 1500 : 300))
+      document.querySelector('.timer-circle').style.strokeDashoffset = progress
+    }
+
+    document.getElementById('startBtn').addEventListener('click', () => {
+      if (!timerId) {
+        timerId = setInterval(() => {
+          timeLeft--
+          if (timeLeft <= 0) {
+            clearInterval(timerId)
+            isWorking = !isWorking
+            timeLeft = (isWorking ? 25 : 5) * 60
+            timerId = null
+          }
+          updateDisplay()
+        }, 1000)
+      }
+    })
+  </script>
+</body>
+</html>
